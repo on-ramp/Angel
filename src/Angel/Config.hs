@@ -123,9 +123,7 @@ modifyProg prog ('e':'n':'v':'.':envVar) (String s) = prog{env = envVar'}
 modifyProg _ ('e':'n':'v':'.':_) _ = error "wrong type for env field; string required"
 
 modifyProg prog "termgrace" (Bool False) = prog{termGrace = Nothing}
-modifyProg prog "termgrace" (Number n) | n < 0 = error "termgrace if it is a number must be >= 1"
-                                       | n == 0 = prog{termGrace = Nothing}
-                                       | otherwise = prog { termGrace = Just $ round n}
+modifyProg prog "termgrace" (Number n)   = prog{termGrace = Just $ round n}
 modifyProg _ "termgrace" _ = error "wrong type for field 'termgrace'; number or boolean false required"
 
 modifyProg prog _ _ = prog

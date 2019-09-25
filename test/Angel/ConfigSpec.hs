@@ -74,17 +74,12 @@ spec = testGroup "Angel.Config"
     , testCase "interprets boolean False as Nothing" $
         modifyProg prog "termgrace" (Bool False) @?=
         prog { termGrace = Nothing }
-    , testCase "interprets 0 as Nothing" $
-        modifyProg prog "termgrace" (Number 0) @?=
-        prog { termGrace = Nothing }
+
     , testCase "interprets > 0 as a set termGrace" $
         modifyProg prog "termgrace" (Number 2) @?=
         prog { termGrace = Just 2 }
     , testCase "interprets boolean True as an error" $
         evaluate (modifyProg prog "termgrace" (Bool True)) `shouldThrow`
-        anyErrorCall
-    , testCase "interprets negative numbers as an error" $
-        evaluate (modifyProg prog "termgrace" (Number (-1))) `shouldThrow`
         anyErrorCall
     , testCase "interprets anything else as an error" $
         evaluate (modifyProg prog "termgrace" (String "yeah")) `shouldThrow`
