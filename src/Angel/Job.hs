@@ -10,6 +10,7 @@ import Control.Monad ( unless
                      , when
                      , forever )
 import Control.Monad.Reader (ask)
+import Data.Char( isSpace )
 import Data.Maybe ( mapMaybe
                   , fromMaybe
                   , fromJust )
@@ -173,7 +174,7 @@ superviseSpawner the_spec cfg cmd args sharedGroupConfig id' onValidHandleAction
 
     where
         cmdSplit fullcmd = (head parts, tail parts)
-            where parts = (filter (/="") . map strip . split ' ') fullcmd
+            where parts = splitArgs fullcmd
 
         makeFiles my_spec cfg =
             case logExec my_spec of
@@ -211,6 +212,40 @@ superviseSpawner the_spec cfg cmd args sharedGroupConfig id' onValidHandleAction
                               Just logpHandle)
                     where
                         loggerSink = programLogger $ "logger for " ++ id'
+
+
+splitArgs :: String -> [String]
+splitArgs  = space []
+  where
+    space :: String -> String -> [String]
+    space w []      = word w []
+    space w ( c :s)
+        | isSpace c = word w (space [] s)
+    space w ('"':s) = string w s
+    space w ('\'':s) = string' w s
+    space w s       = nonstring w s
+
+    string :: String -> String -> [String]
+    string w []      = word w []
+    string w ('"':s) = space w s
+    string w ('\\':'"':s) = string ('"':w) s
+    string w ( c :s) = string (c:w) s
+
+    string' :: String -> String -> [String]
+    string' w []      = word w []
+    string' w ('\'':s) = space w s
+    string' w ('\\':'\'':s) = string' ('\'':w) s
+    string' w ( c :s) = string' (c:w) s
+
+    nonstring :: String -> String -> [String]
+    nonstring w  []      = word w []
+    nonstring w  ('"':s) = string w s
+    nonstring w  ('\'':s) = string' w s
+    nonstring w  ( c :s) = space (c:w) s
+
+    word [] s = s
+    word w  s = reverse w : s
+
 
 logProcess :: (Verbosity -> String -> AngelM ()) -> ProcessHandle -> AngelM ()
 logProcess logSink pHandle = do
