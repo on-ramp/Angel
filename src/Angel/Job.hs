@@ -88,7 +88,7 @@ switchUser name = do
 -- |tail call.
 supervise :: TVar GroupConfig -> String -> AngelM ()
 supervise sharedGroupConfig id' = do
-    logger' V2 "START"
+    logger' V2 "START..."
     cfg <- liftIO $ atomically $ readTVar sharedGroupConfig
     let my_spec = find_spec cfg id'
 
@@ -126,7 +126,7 @@ supervise sharedGroupConfig id' = do
             killProcess $ toKillDirective a_spec ph lph
 
         cmdSplit fullcmd = (head parts, tail parts)
-            where parts = (filter (/="") . map strip . split ' ') fullcmd
+            where parts = splitArgs fullcmd
 
         find_spec cfg id' = M.findWithDefault defaultProgram id' (spec cfg)
 
