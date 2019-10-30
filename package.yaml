@@ -1,0 +1,64 @@
+name: angel
+version: '0.6.2'
+synopsis: Process management and supervision daemon
+description: ! '@angel@ is a daemon that runs and monitors other processes.  It
+
+  is similar to djb''s `daemontools` or the Ruby project `god`.
+
+
+  It''s goals are to keep a set of services running, and to facilitate
+
+  the easy configuration and restart of those services.
+
+  See the homepage for documentation.'
+category: System
+author: Jamie Turner
+maintainer: Michael Xavier <michael@michaelxavier.net>
+license: BSD3
+github: MichaelXavier/Angel.git
+homepage: http://github.com/MichaelXavier/Angel
+bug-reports: http://github.com/MichaelXavier/Angel/issues
+extra-source-files:
+- README.md
+- changelog.md
+- test/test_jobs/CompliantJob.hs
+- test/test_jobs/StubbornJob.hs
+dependencies:
+- mtl
+- configurator >=0.1
+- stm >=2.0
+- containers >=0.3
+- unordered-containers >=0.1.4
+- unix >=2.4
+- old-locale
+- text >=0.11
+- transformers
+executables:
+  angel:
+    main: Angel/Main.hs
+    source-dirs: src
+    ghc-options: -threaded
+    dependencies:
+    - base >=4.5 && <5
+    - process >=1.2.0.0 && <2.0
+    - time >=1.5
+    - optparse-applicative >=0.12
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+    - src
+    - test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    - base >=4.0 && <5
+    - process >=1.0 && <2.0
+    - time
+stability: Stable
