@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3e82db136b678a01c807da7b30f6d789896cbbe903cd214ed866e25d5bee943d
+-- hash: 7fb8e7e6d07ca9a4890656ca07c1be99c11efc510966f03e909ebfc091b9d1c2
 
 name:           angel
 version:        0.6.3
@@ -34,36 +34,59 @@ source-repository head
   type: git
   location: https://github.com/MichaelXavier/Angel.git
 
-executable angel
-  main-is: Angel/Main.hs
-  other-modules:
+library
+  exposed-modules:
       Angel.Config
       Angel.Data
-      Angel.Files
       Angel.Job
-      Angel.Log
-      Angel.PidFile
       Angel.Prelude
-      Angel.Process
+      Angel.Log
       Angel.Util
+      Angel.Files
+  other-modules:
+      Angel.PidFile
+      Angel.Process
       Paths_angel
   hs-source-dirs:
       src
-  ghc-options: -threaded
   build-depends:
-      base >=4.5 && <5
-    , configurator >=0.1
-    , containers >=0.3
+      base
+    , configurator
+    , containers
     , mtl
     , old-locale
-    , optparse-applicative >=0.12
-    , process >=1.2.0.0 && <2.0
-    , stm >=2.0
-    , text >=0.11
-    , time >=1.5
+    , optparse-applicative
+    , process
+    , stm
+    , text
+    , time
     , transformers
-    , unix >=2.4
-    , unordered-containers >=0.1.4
+    , unix
+    , unordered-containers
+  default-language: Haskell2010
+
+executable angel
+  main-is: Main.hs
+  other-modules:
+      Paths_angel
+  hs-source-dirs:
+      app
+  ghc-options: -threaded
+  build-depends:
+      angel
+    , base
+    , configurator
+    , containers
+    , mtl
+    , old-locale
+    , optparse-applicative
+    , process
+    , stm
+    , text
+    , time
+    , transformers
+    , unix
+    , unordered-containers
   default-language: Haskell2010
 
 test-suite spec
@@ -75,7 +98,6 @@ test-suite spec
       Angel.Files
       Angel.Job
       Angel.Log
-      Angel.Main
       Angel.PidFile
       Angel.Prelude
       Angel.Process
@@ -92,19 +114,20 @@ test-suite spec
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.0 && <5
-    , configurator >=0.1
-    , containers >=0.3
+      base
+    , configurator
+    , containers
     , mtl
     , old-locale
-    , process >=1.0 && <2.0
-    , stm >=2.0
+    , optparse-applicative
+    , process
+    , stm
     , tasty
     , tasty-hunit
     , tasty-quickcheck
-    , text >=0.11
+    , text
     , time
     , transformers
-    , unix >=2.4
-    , unordered-containers >=0.1.4
+    , unix
+    , unordered-containers
   default-language: Haskell2010

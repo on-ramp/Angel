@@ -1,3 +1,5 @@
+{-#LANGUAGE ScopedTypeVariables #-}
+
 module Angel.UtilSpec (spec) where
 
 import Angel.Util

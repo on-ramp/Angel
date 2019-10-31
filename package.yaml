@@ -24,25 +24,39 @@ extra-source-files:
 - test/test_jobs/CompliantJob.hs
 - test/test_jobs/StubbornJob.hs
 dependencies:
-- mtl
-- configurator >=0.1
-- stm >=2.0
-- containers >=0.3
-- unordered-containers >=0.1.4
-- unix >=2.4
-- old-locale
-- text >=0.11
-- transformers
+  - base
+  - process
+  - time
+  - optparse-applicative
+  - mtl
+  - configurator 
+  - stm 
+  - containers 
+  - unordered-containers 
+  - unix 
+  - old-locale
+  - text 
+  - transformers
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Angel.Config
+    - Angel.Data
+    - Angel.Job
+    - Angel.Prelude
+    - Angel.Log
+    - Angel.Util
+    - Angel.Files
+
 executables:
   angel:
-    main: Angel/Main.hs
-    source-dirs: src
+    main: Main.hs
+    source-dirs: app
     ghc-options: -threaded
     dependencies:
-    - base >=4.5 && <5
-    - process >=1.2.0.0 && <2.0
-    - time >=1.5
-    - optparse-applicative >=0.12
+    - angel
+
 tests:
   spec:
     main: Spec.hs
@@ -58,7 +72,6 @@ tests:
     - tasty
     - tasty-hunit
     - tasty-quickcheck
-    - base >=4.0 && <5
-    - process >=1.0 && <2.0
+    - process
     - time
 stability: Stable
