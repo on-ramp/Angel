@@ -1,5 +1,5 @@
 name: angel
-version: '0.6.2'
+version: '0.6.3'
 synopsis: Process management and supervision daemon
 description: ! '@angel@ is a daemon that runs and monitors other processes.  It
 

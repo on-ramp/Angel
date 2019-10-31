@@ -1,95 +1,110 @@
-Name:                angel
-Version:             0.6.2
-License:             BSD3
-License-file:        LICENSE
-Author:              Jamie Turner
-Synopsis: Process management and supervision daemon
-Description:    @angel@ is a daemon that runs and monitors other processes.  It
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 3e82db136b678a01c807da7b30f6d789896cbbe903cd214ed866e25d5bee943d
+
+name:           angel
+version:        0.6.3
+synopsis:       Process management and supervision daemon
+description:    @angel@ is a daemon that runs and monitors other processes.  It
                 is similar to djb's `daemontools` or the Ruby project `god`.
                 .
                 It's goals are to keep a set of services running, and to facilitate
                 the easy configuration and restart of those services.
-
                 See the homepage for documentation.
-
-Maintainer:          Michael Xavier <michael@michaelxavier.net>
-Homepage:            http://github.com/MichaelXavier/Angel
-Bug-Reports:         http://github.com/MichaelXavier/Angel/issues
-
-Stability:           Stable
-Category:            System
-Build-type:          Simple
-
-Extra-source-files:  README.md
-                     changelog.md
-                     test/test_jobs/CompliantJob.hs
-                     test/test_jobs/StubbornJob.hs
-
-Cabal-version:       >=1.8
-
+category:       System
+stability:      Stable
+homepage:       http://github.com/MichaelXavier/Angel
+bug-reports:    http://github.com/MichaelXavier/Angel/issues
+author:         Jamie Turner
+maintainer:     Michael Xavier <michael@michaelxavier.net>
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    changelog.md
+    test/test_jobs/CompliantJob.hs
+    test/test_jobs/StubbornJob.hs
 
 source-repository head
-    type: git
-    location: https://github.com/MichaelXavier/Angel.git
+  type: git
+  location: https://github.com/MichaelXavier/Angel.git
 
-Executable angel
-  Hs-Source-Dirs: src
-  Main-is: Angel/Main.hs
-
-  Build-depends: base >= 4.5 && < 5
-  Build-depends: process >= 1.2.0.0 && < 2.0
-  Build-depends: mtl
-  Build-depends: configurator >= 0.1
-  Build-depends: stm >= 2.0
-  Build-depends: containers >= 0.3
-  Build-depends: unordered-containers >= 0.1.4
-  Build-depends: unix >= 2.4
-  Build-depends: time >= 1.5
-  Build-depends: old-locale
-  Build-depends: text>=0.11
-  Build-depends: transformers
-  Build-depends: optparse-applicative >= 0.12
-
-
-  Other-modules: Angel.Files,
-                 Angel.Config,
-                 Angel.Data,
-                 Angel.Job,
-                 Angel.Prelude,
-                 Angel.Process,
-                 Angel.Log,
-                 Angel.Util,
-                 Angel.PidFile
-
-  Extensions: OverloadedStrings,ScopedTypeVariables,BangPatterns,ViewPatterns
-
-  Ghc-Options: -threaded
+executable angel
+  main-is: Angel/Main.hs
+  other-modules:
+      Angel.Config
+      Angel.Data
+      Angel.Files
+      Angel.Job
+      Angel.Log
+      Angel.PidFile
+      Angel.Prelude
+      Angel.Process
+      Angel.Util
+      Paths_angel
+  hs-source-dirs:
+      src
+  ghc-options: -threaded
+  build-depends:
+      base >=4.5 && <5
+    , configurator >=0.1
+    , containers >=0.3
+    , mtl
+    , old-locale
+    , optparse-applicative >=0.12
+    , process >=1.2.0.0 && <2.0
+    , stm >=2.0
+    , text >=0.11
+    , time >=1.5
+    , transformers
+    , unix >=2.4
+    , unordered-containers >=0.1.4
+  default-language: Haskell2010
 
 test-suite spec
-  Type:           exitcode-stdio-1.0
-  Main-Is:        Spec.hs
-  Hs-Source-Dirs: src, test
-  Other-modules: Angel.ConfigSpec
-                 Angel.JobSpec
-                 Angel.LogSpec
-                 Angel.PidFileSpec
-                 Angel.UtilSpec
-                 SpecHelper
-  Build-Depends: base
-  Build-Depends: tasty
-  Build-Depends: tasty-hunit
-  Build-Depends: tasty-quickcheck
-  Build-depends: base >= 4.0 && < 5
-  Build-depends: process >= 1.0 && < 2.0
-  Build-depends: mtl
-  Build-depends: configurator >= 0.1
-  Build-depends: stm >= 2.0
-  Build-depends: containers >= 0.3
-  Build-depends: unordered-containers >= 0.1.4
-  Build-depends: unix >= 2.4
-  Build-depends: time
-  Build-depends: old-locale
-  Build-depends: text>=0.11
-  Build-depends: transformers
-  Extensions: OverloadedStrings,ScopedTypeVariables,BangPatterns,ViewPatterns
-  Ghc-Options: -threaded -rtsopts -with-rtsopts=-N
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Angel.Config
+      Angel.Data
+      Angel.Files
+      Angel.Job
+      Angel.Log
+      Angel.Main
+      Angel.PidFile
+      Angel.Prelude
+      Angel.Process
+      Angel.Util
+      Angel.ConfigSpec
+      Angel.JobSpec
+      Angel.LogSpec
+      Angel.PidFileSpec
+      Angel.UtilSpec
+      SpecHelper
+      Paths_angel
+  hs-source-dirs:
+      src
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.0 && <5
+    , configurator >=0.1
+    , containers >=0.3
+    , mtl
+    , old-locale
+    , process >=1.0 && <2.0
+    , stm >=2.0
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , text >=0.11
+    , time
+    , transformers
+    , unix >=2.4
+    , unordered-containers >=0.1.4
+  default-language: Haskell2010
