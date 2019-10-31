@@ -16,6 +16,7 @@ import Control.Concurrent.STM (TVar,
 import Control.Monad (forever)
 import Data.Monoid ( (<>) )
 import Control.Monad.Reader
+import Control.Applicative
 import Options.Applicative (ParserInfo, ReadM)
 import qualified Options.Applicative as O
 import System.Environment (getArgs)
@@ -42,6 +43,7 @@ import Angel.Log (logger)
 import Angel.Config (monitorConfig, loadInitialUserFromConfig)
 import Angel.Data (GroupConfig(GroupConfig),
                    Options(..),
+                   Config(..),
                    spec,
                    Verbosity(..),
                    AngelM,
@@ -59,7 +61,13 @@ handleExit :: MVar Bool -> IO ()
 handleExit mv = putMVar mv True
 
 main :: IO ()
-main = runWithOpts =<< O.execParser opts
+main = do
+  options <- O.execParser opts
+  secKey <-
+    if stdInSecKey options then
+      getLine >>= return . Just . (,) "EXEC_PRIVATE_KEY" else
+      return Nothing
+  runWithOpts $ Config options secKey 
 
 opts :: ParserInfo Options
 opts = O.info (O.helper <*> opts')
@@ -76,7 +84,9 @@ opts = O.info (O.helper <*> opts')
                                  O.showDefaultWith vOptAsNumber <>
                                  O.metavar "VERBOSITY" <>
                                  O.help "Verbosity from 0-2")
-
+            <*> O.switch ( O.long "stdin-key" <>
+                           O.short 'i' <>
+                           O.help "Flag to alert we are going to gather Secret Key from StdIn.")
 
 vOptAsNumber :: Verbosity -> String
 vOptAsNumber V2 = "2"
@@ -84,7 +94,7 @@ vOptAsNumber V1 = "1"
 vOptAsNumber V0 = "0"
 
 readUserOpt :: ReadM (Maybe String)
-readUserOpt = O.eitherReader $ (return . Just)
+readUserOpt = O.eitherReader (return . Just)
 
 readVOpt :: ReadM Verbosity
 readVOpt = O.eitherReader $ \s ->
@@ -94,7 +104,7 @@ readVOpt = O.eitherReader $ \s ->
       "2" -> return V2
       _   -> Left "Expecting 0-2"
 
-runWithOpts :: Options -> IO ()
+runWithOpts :: Config -> IO ()
 runWithOpts os = runAngelM os runWithConfigPath
 
 switchUser :: String -> IO ()
@@ -104,14 +114,14 @@ switchUser name = do
 
 switchRunningUser :: AngelM ()
 switchRunningUser = do
-    username <- asks userargument
+    username <- asks (userargument . options)
 
     case username of
         Just user -> do
             logger "main" V2 $ "Running as user: " ++ user
             liftIO $ switchUser user
         Nothing -> do
-            configPath <- asks configFile
+            configPath <- asks (configFile . options)
             userFromConfig <- liftIO $ loadInitialUserFromConfig configPath
             case userFromConfig of
                 Just configUser -> do
@@ -121,7 +131,7 @@ switchRunningUser = do
 
 runWithConfigPath :: AngelM ()
 runWithConfigPath = do
-    configPath <- asks configFile
+    configPath <- asks (configFile . options)
     liftIO $ hSetBuffering stdout LineBuffering
     liftIO $ hSetBuffering stderr LineBuffering
     let logger' = logger "main"
