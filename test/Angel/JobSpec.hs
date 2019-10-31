@@ -86,8 +86,5 @@ launchJob n = do wd <- getWorkingDirectory
 patientlyGetProcessExitCode :: ProcessHandle -> IO (Maybe ProcessStatus)
 patientlyGetProcessExitCode ph = sleepSecs 1 >> getProcessHandleStatus ph
 
-dummyOptions :: Options
-dummyOptions = Options {
-      configFile = ""
-    , verbosity  = V0
-    }
+dummyOptions :: Config
+dummyOptions = Config {options = Options "" Nothing V0 False, secretKey = Nothing}
