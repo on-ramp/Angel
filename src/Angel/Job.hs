@@ -231,11 +231,10 @@ killProcess (SoftKill n pid lpid) = do
     Nothing -> return ()
   where logger' = logger "process-killer"
 killProcess (HardKill n pid lpid grace) = do
-  when (grace >= 0) $ do
-      logger' V2 $ "Attempting soft kill " ++ n ++ " before hard killing"
-      liftIO $ softKillProcessHandle pid
-      logger' V2 $ "Waiting " ++ show grace ++ " seconds for " ++ n ++ " to die"
-      liftIO $ sleepSecs grace
+  logger' V2 $ "Attempting soft kill " ++ n ++ " before hard killing"
+  liftIO $ softKillProcessHandle pid
+  logger' V2 $ "Waiting " ++ show grace ++ " seconds for " ++ n ++ " to die"
+  liftIO $ sleepSecs grace
 
   -- Note that this means future calls to get exits status will fail
   dead <- liftIO $ isProcessHandleDead pid
