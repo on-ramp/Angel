@@ -1,5 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoImplicitPrelude          #-}
 module Angel.Data ( GroupConfig(..)
                   , SpecKey
                   , RunKey
@@ -11,6 +11,7 @@ module Angel.Data ( GroupConfig(..)
                   , KillDirective(..)
                   , Verbosity(..)
                   , Options(..)
+                  , Config(..)
                   , AngelM(..)
                   , defaultProgram
                   , defaultDelay
@@ -19,21 +20,21 @@ module Angel.Data ( GroupConfig(..)
                   , runAngelM
                   ) where
 
-import qualified Data.Map as M
-import System.Process (ProcessHandle)
-import Control.Applicative (Applicative)
-import Control.Monad.IO.Class (MonadIO)
-import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
-import Control.Concurrent.STM.TChan (TChan)
-import System.IO (Handle)
+import           Control.Applicative          (Applicative)
+import           Control.Concurrent.STM.TChan (TChan)
+import           Control.Monad.IO.Class       (MonadIO)
+import           Control.Monad.Reader         (MonadReader, ReaderT, runReaderT)
+import qualified Data.Map                     as M
+import           System.IO                    (Handle)
+import           System.Process               (ProcessHandle)
 
-import Angel.Prelude
+import           Angel.Prelude
 
 -- |the whole shared state of the program; spec is what _should_
 -- |be running, while running is what actually _is_ running_ currently
 data GroupConfig = GroupConfig {
-    spec :: SpecKey,
-    running :: RunKey,
+    spec        :: SpecKey,
+    running     :: RunKey,
     fileRequest :: TChan FileRequest
 }
 
@@ -42,8 +43,8 @@ type SpecKey = M.Map ProgramId Program
 type RunKey = M.Map ProgramId RunState
 
 data RunState = RunState {
-  rsProgram :: Program,
-  rsHandle :: Maybe ProcessHandle,
+  rsProgram   :: Program,
+  rsHandle    :: Maybe ProcessHandle,
   rsLogHandle :: Maybe ProcessHandle
 }
 
@@ -88,18 +89,24 @@ data Verbosity = V0
 
 
 data Options = Options {
-      configFile :: FilePath
+      configFile   :: FilePath
     , userargument :: Maybe String
-    , verbosity  :: Verbosity
+    , verbosity    :: Verbosity
+    , stdInSecKey  :: Bool
     }
 
 
+data Config = Config
+  { options   :: Options
+  , secretKey :: Maybe (String, String)
+  }
+
 newtype AngelM a = AngelM {
-      unAngelM :: ReaderT Options IO a
-    } deriving (Functor, Applicative, Monad, MonadReader Options, MonadIO)
+      unAngelM :: ReaderT Config IO a
+    } deriving (Functor, Applicative, Monad, MonadReader Config, MonadIO)
 
 
-runAngelM :: Options -> AngelM a -> IO a
+runAngelM :: Config -> AngelM a -> IO a
 runAngelM o (AngelM f) = runReaderT f o
 
 -- |a template for an empty program; the variable set to ""

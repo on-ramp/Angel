@@ -9,7 +9,7 @@ import Control.Exception ( finally )
 import Control.Monad ( unless
                      , when
                      , forever )
-import Control.Monad.Reader (ask)
+import Control.Monad.Reader (ask, asks)
 import Data.Char( isSpace )
 import Data.Maybe ( mapMaybe
                   , fromMaybe
@@ -152,7 +152,9 @@ superviseSpawner
   -> AngelM ()
 superviseSpawner the_spec cfg cmd args sharedGroupConfig id' onValidHandleAction onPidErrorAction = do
     opts <- ask
+    secKey <- asks D.secretKey 
     let io = runAngelM opts
+    let envSpec = D.env the_spec
     liftIO $ do
         maybe (return ()) switchUser (D.user the_spec)
         -- start the logger process or if non is configured
@@ -164,7 +166,7 @@ superviseSpawner the_spec cfg cmd args sharedGroupConfig id' onValidHandleAction
               std_out = attachOut,
               std_err = attachErr,
               cwd = workingDir the_spec,
-              env = Just $ D.env the_spec
+              env = Just $ maybe envSpec (:envSpec) secKey
             }
 
         startMaybeWithPidFile procSpec

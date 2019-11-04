@@ -34,5 +34,5 @@ programLogger id' = logger $ "- program: " ++ id' ++ " -"
 
 shouldLog :: Verbosity -> AngelM Bool
 shouldLog v = do
-  maxV <- asks verbosity
+  maxV <- asks (verbosity . options)
   return $ v <= maxV
